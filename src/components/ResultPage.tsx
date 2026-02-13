@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { type Archetype, archetypes } from "@/data/archetypes";
 import { archetypeIllustrations } from "@/data/archetypeIllustrations";
 import { compatibility, compatLevelLabel, compatLevelColor, type CompatLevel } from "@/data/compatibility";
@@ -22,6 +23,38 @@ const firstSentence = (text: string) => {
   return match ? match[1] : text.slice(0, 120) + "…";
 };
 
+/** Extract the first N sentences (default 3) from a paragraph */
+const firstNSentences = (text: string, n = 3) => {
+  const sentences = text.split(/(?<=[.!?])\s+/).filter(Boolean);
+  if (sentences.length <= n) return text.trim();
+  return sentences.slice(0, n).join(" ").trim();
+};
+
+/** Create a short summary (2 sentences) from the advice object */
+const summarizeAdvice = (
+  advice: {
+    communication: string;
+    compatiblePartner: string;
+    pitfalls: string;
+    growth: string;
+    datingStrategy: string;
+    conflictHandling: string;
+  },
+  sentences = 2
+) => {
+  const combined = [
+    advice.communication,
+    advice.compatiblePartner,
+    advice.pitfalls,
+    advice.growth,
+    advice.datingStrategy,
+    advice.conflictHandling,
+  ]
+    .filter(Boolean)
+    .join(" ");
+  return firstNSentences(combined, sentences);
+};
+
 /** Grab 2-3 short key phrases from a paragraph */
 const keyPhrases = (text: string, count = 3): string[] => {
   const sentences = text.split(/(?<=[.!?])\s+/).filter(Boolean);
@@ -30,72 +63,53 @@ const keyPhrases = (text: string, count = 3): string[] => {
 
 const ResultPage = ({ archetype, onRestart }: ResultPageProps) => {
   const illustration = archetypeIllustrations[archetype.key];
+  const [selectedPartner, setSelectedPartner] = useState<Archetype | null>(null);
 
   return (
     <div className="min-h-screen bg-background">
       {/* ── Hero ── */}
-      <div className="gradient-hero py-14 md:py-20 px-4">
-        <div className="max-w-md mx-auto text-center">
-          <motion.div {...anim(0)}>
+      <div className="gradient-hero py-8 md:py-12 px-4">
+        <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-4">
+          {/* Image left */}
+          {illustration && (
+            <motion.div {...anim(0)} className="flex-shrink-0">
+              <div className="w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 lg:w-44 lg:h-44 rounded-2xl md:rounded-3xl overflow-hidden bg-white/40 dark:bg-black/30 shadow-xl border border-border flex items-center justify-center">
+                <img
+                  src={illustration}
+                  alt={archetype.name}
+                  className="w-full h-full object-cover block"
+                />
+              </div>
+            </motion.div>
+          )}
+
+          {/* Text right */}
+          <motion.div {...anim(0.05)} className="text-center md:text-left mx-auto md:mx-0">
             <p className="text-sm font-body text-muted-foreground mb-2 tracking-wide uppercase">
               You are…
             </p>
-            
-            <h1 className="text-3xl md:text-5xl font-display font-bold text-gradient mb-2">
+            <h1 className="text-3xl md:text-4xl font-display font-bold text-gradient mb-1">
               {archetype.name}
             </h1>
+            <motion.p className="text-sm md:text-base text-muted-foreground italic font-display" {...anim(0.1)}>
+              "{archetype.tagline}"
+            </motion.p>
           </motion.div>
-
-          {illustration && (
-            <motion.img
-              src={illustration}
-              alt={archetype.name}
-              className="w-40 h-40 md:w-48 md:h-48 rounded-2xl object-cover shadow-xl border-2 border-blush/30 mx-auto my-5"
-              {...anim(0.15)}
-            />
-          )}
-
-          <motion.p
-            className="text-base md:text-lg text-muted-foreground italic font-display"
-            {...anim(0.2)}
-          >
-            "{archetype.tagline}"
-          </motion.p>
         </div>
       </div>
 
       {/* ── Cards ── */}
-      <div className="max-w-lg mx-auto px-4 py-10 space-y-6">
-        {/* Quick trait chips */}
-        <motion.div className="flex flex-wrap justify-center gap-2" {...anim(0.25)}>
-          {archetype.strengths.slice(0, 3).map((s) => (
-            <span
-              key={s}
-              className="px-4 py-2 rounded-full bg-secondary text-secondary-foreground text-sm font-body"
-            >
-              {s}
-            </span>
-          ))}
-        </motion.div>
+      <div className="max-w-4xl mx-auto px-4 py-10 space-y-6">
 
-        {/* Profile card */}
-        <Card title="Your Lover Profile" delay={0.3}>
-          <p className="text-sm text-muted-foreground font-body leading-relaxed">
-            {firstSentence(archetype.description)}
-          </p>
-        </Card>
+
+        {/* Combined profile + how you love (left column) — profile card removed, merged into left grid column below */}
 
         {/* Side-by-side: How You Love / How to Love You */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Card title="How You Love" delay={0.35}>
-            <ul className="space-y-1.5">
-              {keyPhrases(archetype.howTheyLove, 2).map((p, i) => (
-                <li key={i} className="text-sm text-muted-foreground font-body flex items-start gap-2">
-                  <span className="text-accent mt-0.5">·</span>
-                  <span>{p}</span>
-                </li>
-              ))}
-            </ul>
+          <Card title="Your Lover Profile" delay={0.35}>
+            <p className="text-sm text-muted-foreground font-body leading-relaxed">
+              {firstSentence(archetype.description)} {firstNSentences(archetype.howTheyLove, 2)}
+            </p>
           </Card>
           <Card title="How to Love You" delay={0.4}>
             <ul className="space-y-1.5">
@@ -109,34 +123,7 @@ const ResultPage = ({ archetype, onRestart }: ResultPageProps) => {
           </Card>
         </div>
 
-        {/* Strengths & Growth side-by-side */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Card title="Strengths" delay={0.45}>
-            <ul className="space-y-1">
-              {archetype.strengths.map((s) => (
-                <li key={s} className="text-sm text-muted-foreground font-body">
-                  {s}
-                </li>
-              ))}
-            </ul>
-          </Card>
-          <Card title="Growth Areas" delay={0.5}>
-            <ul className="space-y-1">
-              {archetype.growthAreas.map((g) => (
-                <li key={g} className="text-sm text-muted-foreground font-body">
-                  {g}
-                </li>
-              ))}
-            </ul>
-          </Card>
-        </div>
 
-        {/* Romantic dynamic */}
-        <Card title="Ideal Dynamic" delay={0.55}>
-          <p className="text-sm text-muted-foreground font-body leading-relaxed">
-            {firstSentence(archetype.idealDynamic)}
-          </p>
-        </Card>
 
         {/* Best environment */}
         <Card title="Where to Find Love" delay={0.6}>
@@ -145,51 +132,33 @@ const ResultPage = ({ archetype, onRestart }: ResultPageProps) => {
           </p>
         </Card>
 
-        {/* Decorative image divider */}
-        <motion.div className="flex justify-center py-2" {...anim(0.65)}>
-          <img
-            src={coupleBokeh}
-            alt=""
-            className="w-32 h-32 rounded-2xl object-cover shadow-md border border-blush/20 -rotate-2"
-          />
-        </motion.div>
+
 
         {/* ── Advice Section ── */}
         <motion.div {...anim(0.7)}>
-          <div className="flex items-center gap-3 mb-5">
-            <img
-              src={coupleWindow}
-              alt=""
-              className="w-14 h-14 rounded-xl object-cover border border-blush/30"
-            />
-            <div>
-              <h2 className="text-xl md:text-2xl font-display font-bold text-gradient">
-                Personalized Advice
-              </h2>
-              <p className="text-xs text-muted-foreground">Tailored to your type</p>
-            </div>
-          </div>
+          <h2 className="text-xl md:text-2xl font-display font-bold text-gradient mb-4">
+            Personalized Advice
+          </h2>
+          <Card title="" delay={0.75}>
+            <p className="text-sm text-muted-foreground font-body leading-relaxed">
+              {summarizeAdvice(archetype.advice, 2)}
+            </p>
+          </Card>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <AdviceCard icon="" title="Communication" text={firstSentence(archetype.advice.communication)} delay={0.75} />
-          <AdviceCard icon="" title="Compatible Partners" text={firstSentence(archetype.advice.compatiblePartner)} delay={0.8} />
-          <AdviceCard icon="" title="Pitfalls" text={firstSentence(archetype.advice.pitfalls)} delay={0.85} />
-          <AdviceCard icon="" title="Growth" text={firstSentence(archetype.advice.growth)} delay={0.9} />
-          <AdviceCard icon="" title="Dating Strategy" text={firstSentence(archetype.advice.datingStrategy)} delay={0.95} />
-          <AdviceCard icon="" title="Conflict" text={firstSentence(archetype.advice.conflictHandling)} delay={1.0} />
-        </div>
-
         {/* ── Compatibility Section ── */}
-        <motion.div className="mt-10 pt-8 border-t-2 border-border" {...anim(1.05)}>
+        <motion.div className="pt-6 border-t border-border" {...anim(1.05)}>
           <h2 className="text-xl md:text-2xl font-display font-bold text-gradient mb-1">
             Compatibility
           </h2>
           <p className="text-xs text-muted-foreground mb-6">How you pair with every archetype</p>
 
           {/* Best matches first */}
-          {(["great", "good", "neutral", "challenging"] as CompatLevel[]).map((level) => {
-            const matches = (compatibility[archetype.key] || []).filter((c) => c.level === level);
+          {(["great", "challenging"] as CompatLevel[]).map((level) => {
+            // Keep up to 2 results for each shown tier: "great" (perfect matches) and "challenging" (opposites)
+            const matches = (compatibility[archetype.key] || [])
+              .filter((c) => c.level === level)
+              .slice(0, 2);
             if (matches.length === 0) return null;
             return (
               <div key={level} className="mb-5">
@@ -197,7 +166,7 @@ const ResultPage = ({ archetype, onRestart }: ResultPageProps) => {
                   
                   {compatLevelLabel[level]}
                 </h4>
-                <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-3">
                   {matches.map((match) => {
                     const partner = archetypes[match.key];
                     if (!partner) return null;
@@ -205,26 +174,24 @@ const ResultPage = ({ archetype, onRestart }: ResultPageProps) => {
                     return (
                       <motion.div
                         key={match.key}
-                        className={`flex items-center gap-3 p-3 rounded-xl border ${compatLevelColor[match.level]}`}
+                        className={`flex flex-col items-center p-2 rounded-2xl border ${compatLevelColor[match.level]} cursor-pointer w-full`}
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.3 }}
+                        onClick={() => setSelectedPartner(partner)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setSelectedPartner(partner); }}
                       >
-                        {partnerImg && (
-                          <img
-                            src={partnerImg}
-                            alt={partner.name}
-                            className="w-10 h-10 rounded-lg object-cover border border-border flex-shrink-0"
-                          />
+                        {partnerImg ? (
+                          <div className="w-full h-40 sm:h-44 md:h-48 rounded-xl overflow-hidden bg-white/60 dark:bg-black/30 flex items-center justify-center border border-border">
+                            <img src={partnerImg} alt={partner.name} className="w-full h-full object-cover object-center block" />
+                          </div>
+                        ) : (
+                          <div className="w-full h-40 sm:h-44 md:h-48 rounded-xl bg-muted-foreground/10" />
                         )}
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-display font-semibold truncate">
-                            {partner.name}
-                          </p>
-                          <p className="text-xs text-muted-foreground font-body leading-snug">
-                            {match.reason}
-                          </p>
-                        </div>
+
+                        <p className="text-sm font-display font-semibold mt-3 text-center">{partner.name}</p>
                       </motion.div>
                     );
                   })}
@@ -233,6 +200,37 @@ const ResultPage = ({ archetype, onRestart }: ResultPageProps) => {
             );
           })}
         </motion.div>
+
+        {/* Partner modal (click to view) */}
+        {selectedPartner && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="fixed inset-0 bg-black/50" onClick={() => setSelectedPartner(null)} />
+            <motion.div
+              className="relative bg-card rounded-xl p-6 max-w-lg mx-4 w-full shadow-xl border border-border"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.18 }}
+            >
+              <button
+                onClick={() => setSelectedPartner(null)}
+                className="absolute top-3 right-3 text-muted-foreground"
+                aria-label="Close partner"
+              >
+                ×
+              </button>
+              <div className="flex items-start gap-4">
+                <div className="w-20 h-20 rounded-2xl overflow-hidden bg-white/60 flex-shrink-0 border border-border">
+                  <img src={archetypeIllustrations[selectedPartner.key]} alt={selectedPartner.name} className="w-full h-full object-cover" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-display font-semibold">{selectedPartner.name}</h3>
+                  <p className="text-sm italic text-muted-foreground">{selectedPartner.tagline}</p>
+                  <p className="mt-2 text-sm text-muted-foreground">{firstSentence(selectedPartner.description)}</p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
 
         {/* Restart */}
         <motion.div className="text-center pt-10 pb-6" {...anim(1.2)}>
