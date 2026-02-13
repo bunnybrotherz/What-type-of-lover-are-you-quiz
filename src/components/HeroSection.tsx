@@ -1,12 +1,15 @@
 import { motion } from "framer-motion";
 import coupleCozy from "@/assets/couple-cozy.png";
 import coupleFlowers from "@/assets/couple-flowers.png";
+import { archetypeIllustrations } from "@/data/archetypeIllustrations";
 
 interface HeroSectionProps {
   onStart: () => void;
 }
 
 const HeroSection = ({ onStart }: HeroSectionProps) => {
+  const archetypeKeys = Object.keys(archetypeIllustrations);
+
   return (
     <div className="min-h-screen gradient-hero flex flex-col items-center justify-center relative overflow-hidden px-4">
       {/* Floating decorative elements */}
@@ -17,24 +20,41 @@ const HeroSection = ({ onStart }: HeroSectionProps) => {
         <div className="absolute top-1/3 right-1/3 w-2 h-2 rounded-full bg-accent/30 animate-float" style={{ animationDelay: "0.5s" }} />
       </div>
 
-      {/* Images */}
-      <div className="flex items-center gap-6 mb-8 md:gap-10">
-        <motion.img
-          src={coupleCozy}
-          alt="Cozy couple illustration"
-          className="w-32 h-32 md:w-48 md:h-48 rounded-2xl object-cover shadow-lg border-2 border-blush/30"
-          initial={{ opacity: 0, x: -40, rotate: -5 }}
-          animate={{ opacity: 1, x: 0, rotate: -3 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        />
-        <motion.img
-          src={coupleFlowers}
-          alt="Couple in flower field illustration"
-          className="w-32 h-32 md:w-48 md:h-48 rounded-2xl object-cover shadow-lg border-2 border-lavender/30 mt-8"
-          initial={{ opacity: 0, x: 40, rotate: 5 }}
-          animate={{ opacity: 1, x: 0, rotate: 3 }}
-          transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-        />
+      {/* Images Grid - All 10 Archetypes - 5 Top, 5 Below */}
+      <div className="relative w-full h-64 md:h-72 mb-8 max-w-5xl">
+        {archetypeKeys.map((key, index) => {
+          const seed = key.charCodeAt(0);
+          const isTopRow = index < 5;
+          const positionInRow = isTopRow ? index : index - 5;
+          
+          // Position horizontally across the row
+          const randomX = (positionInRow * 20) + ((seed * 73) % 4) - 2;
+          // Position vertically (top row at 40%, bottom row at 60%)
+          const randomY = isTopRow ? 40 : 60;
+          const randomRotation = ((seed * 157 + index * 103) % 20) - 10;
+          
+          return (
+            <motion.img
+              key={key}
+              src={archetypeIllustrations[key]}
+              alt={`Archetype ${key}`}
+              className="absolute w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-lg object-cover object-center shadow-md border border-border hover:shadow-lg transition-shadow"
+              style={{
+                left: `${randomX}%`,
+                top: `${randomY}%`,
+                transform: `translateY(-50%)`,
+              }}
+              initial={{ opacity: 0, scale: 0.5, rotate: randomRotation - 10 }}
+              animate={{ opacity: 1, scale: 1, rotate: randomRotation }}
+              transition={{
+                duration: 0.7,
+                ease: "easeOut",
+                delay: index * 0.08,
+              }}
+              whileHover={{ scale: 1.1, rotate: randomRotation + 5 }}
+            />
+          );
+        })}
       </div>
 
       {/* Title */}
