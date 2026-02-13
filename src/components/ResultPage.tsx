@@ -3,6 +3,7 @@ import { useState } from "react";
 import { type Archetype, archetypes } from "@/data/archetypes";
 import { archetypeIllustrations } from "@/data/archetypeIllustrations";
 import { compatibility, compatLevelLabel, compatLevelColor, type CompatLevel } from "@/data/compatibility";
+import ShareResults from "./ShareResults";
 import coupleBokeh from "@/assets/couple-bokeh.png";
 import coupleWindow from "@/assets/couple-window.png";
 
@@ -231,6 +232,9 @@ const ResultPage = ({ archetype, onRestart }: ResultPageProps) => {
             </motion.div>
           </div>
         )}
+
+        {/* Share Results */}
+        <ShareResults archetype={archetype} />
 
         {/* Restart */}
         <motion.div className="text-center pt-10 pb-6" {...anim(1.2)}>
