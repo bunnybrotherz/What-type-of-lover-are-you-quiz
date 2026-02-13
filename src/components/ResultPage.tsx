@@ -185,7 +185,7 @@ const ResultPage = ({ archetype, onRestart }: ResultPageProps) => {
                       >
                         {partnerImg ? (
                           <div className="w-full h-40 sm:h-44 md:h-48 rounded-xl overflow-hidden bg-white/60 dark:bg-black/30 flex items-center justify-center border border-border">
-                            <img src={partnerImg} alt={partner.name} className="w-full h-full object-cover object-center block" />
+                            <img src={partnerImg} alt={partner.name} className="w-full h-full object-cover object-center block" loading="lazy" />
                           </div>
                         ) : (
                           <div className="w-full h-40 sm:h-44 md:h-48 rounded-xl bg-muted-foreground/10" />
