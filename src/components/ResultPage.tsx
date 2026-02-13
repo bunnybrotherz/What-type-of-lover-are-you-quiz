@@ -40,7 +40,7 @@ const ResultPage = ({ archetype, onRestart }: ResultPageProps) => {
             <p className="text-sm font-body text-muted-foreground mb-2 tracking-wide uppercase">
               You are…
             </p>
-            <span className="text-5xl md:text-6xl block mb-3">{archetype.emoji}</span>
+            
             <h1 className="text-3xl md:text-5xl font-display font-bold text-gradient mb-2">
               {archetype.name}
             </h1>
@@ -91,7 +91,7 @@ const ResultPage = ({ archetype, onRestart }: ResultPageProps) => {
             <ul className="space-y-1.5">
               {keyPhrases(archetype.howTheyLove, 2).map((p, i) => (
                 <li key={i} className="text-sm text-muted-foreground font-body flex items-start gap-2">
-                  <span className="text-accent mt-0.5">♡</span>
+                  <span className="text-accent mt-0.5">·</span>
                   <span>{p}</span>
                 </li>
               ))}
@@ -101,7 +101,7 @@ const ResultPage = ({ archetype, onRestart }: ResultPageProps) => {
             <ul className="space-y-1.5">
               {keyPhrases(archetype.howToLoveThem, 2).map((p, i) => (
                 <li key={i} className="text-sm text-muted-foreground font-body flex items-start gap-2">
-                  <span className="text-accent mt-0.5">✦</span>
+                  <span className="text-accent mt-0.5">·</span>
                   <span>{p}</span>
                 </li>
               ))}
@@ -115,7 +115,7 @@ const ResultPage = ({ archetype, onRestart }: ResultPageProps) => {
             <ul className="space-y-1">
               {archetype.strengths.map((s) => (
                 <li key={s} className="text-sm text-muted-foreground font-body">
-                  ✓ {s}
+                  {s}
                 </li>
               ))}
             </ul>
@@ -124,7 +124,7 @@ const ResultPage = ({ archetype, onRestart }: ResultPageProps) => {
             <ul className="space-y-1">
               {archetype.growthAreas.map((g) => (
                 <li key={g} className="text-sm text-muted-foreground font-body">
-                  → {g}
+                  {g}
                 </li>
               ))}
             </ul>
@@ -172,12 +172,12 @@ const ResultPage = ({ archetype, onRestart }: ResultPageProps) => {
         </motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <AdviceCard icon="💬" title="Communication" text={firstSentence(archetype.advice.communication)} delay={0.75} />
-          <AdviceCard icon="💕" title="Compatible Partners" text={firstSentence(archetype.advice.compatiblePartner)} delay={0.8} />
-          <AdviceCard icon="⚠️" title="Pitfalls" text={firstSentence(archetype.advice.pitfalls)} delay={0.85} />
-          <AdviceCard icon="🌱" title="Growth" text={firstSentence(archetype.advice.growth)} delay={0.9} />
-          <AdviceCard icon="📱" title="Dating Strategy" text={firstSentence(archetype.advice.datingStrategy)} delay={0.95} />
-          <AdviceCard icon="🌊" title="Conflict" text={firstSentence(archetype.advice.conflictHandling)} delay={1.0} />
+          <AdviceCard icon="" title="Communication" text={firstSentence(archetype.advice.communication)} delay={0.75} />
+          <AdviceCard icon="" title="Compatible Partners" text={firstSentence(archetype.advice.compatiblePartner)} delay={0.8} />
+          <AdviceCard icon="" title="Pitfalls" text={firstSentence(archetype.advice.pitfalls)} delay={0.85} />
+          <AdviceCard icon="" title="Growth" text={firstSentence(archetype.advice.growth)} delay={0.9} />
+          <AdviceCard icon="" title="Dating Strategy" text={firstSentence(archetype.advice.datingStrategy)} delay={0.95} />
+          <AdviceCard icon="" title="Conflict" text={firstSentence(archetype.advice.conflictHandling)} delay={1.0} />
         </div>
 
         {/* ── Compatibility Section ── */}
@@ -194,7 +194,7 @@ const ResultPage = ({ archetype, onRestart }: ResultPageProps) => {
             return (
               <div key={level} className="mb-5">
                 <h4 className="text-xs font-body font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                  {level === "great" && "💕"} {level === "good" && "✨"} {level === "neutral" && "〰️"} {level === "challenging" && "⚡"}{" "}
+                  
                   {compatLevelLabel[level]}
                 </h4>
                 <div className="space-y-2">
@@ -219,7 +219,7 @@ const ResultPage = ({ archetype, onRestart }: ResultPageProps) => {
                         )}
                         <div className="min-w-0 flex-1">
                           <p className="text-sm font-display font-semibold truncate">
-                            {partner.emoji} {partner.name}
+                            {partner.name}
                           </p>
                           <p className="text-xs text-muted-foreground font-body leading-snug">
                             {match.reason}
@@ -240,7 +240,7 @@ const ResultPage = ({ archetype, onRestart }: ResultPageProps) => {
             onClick={onRestart}
             className="px-8 py-3 rounded-full border-2 border-primary text-primary font-display hover:bg-primary/10 transition-colors"
           >
-            Retake the Quiz ✦
+            Retake the Quiz
           </button>
         </motion.div>
       </div>
@@ -284,7 +284,7 @@ const AdviceCard = ({
     {...anim(delay)}
   >
     <h4 className="font-display font-semibold text-foreground mb-1.5 text-sm">
-      {icon} {title}
+      {title}
     </h4>
     <p className="text-xs text-muted-foreground font-body leading-relaxed">{text}</p>
   </motion.div>

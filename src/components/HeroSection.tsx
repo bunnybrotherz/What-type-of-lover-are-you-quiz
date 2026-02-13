@@ -65,7 +65,7 @@ const HeroSection = ({ onStart }: HeroSectionProps) => {
         whileHover={{ y: -2 }}
         whileTap={{ scale: 0.95 }}
       >
-        Discover Your Type ✦
+        Discover Your Type
       </motion.button>
 
       <motion.p
@@ -74,7 +74,7 @@ const HeroSection = ({ onStart }: HeroSectionProps) => {
         animate={{ opacity: 1 }}
         transition={{ delay: 1 }}
       >
-        14 questions · Takes ~5 minutes
+        14 questions, about 5 minutes
       </motion.p>
     </div>
   );
