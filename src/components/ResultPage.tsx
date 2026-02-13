@@ -9,144 +9,178 @@ interface ResultPageProps {
   onRestart: () => void;
 }
 
-const Section = ({ title, children, delay = 0 }: { title: string; children: React.ReactNode; delay?: number }) => (
-  <motion.div
-    className="mb-8"
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5, delay }}
-  >
-    <h3 className="text-xl md:text-2xl font-display font-semibold text-foreground mb-3">{title}</h3>
-    <div className="text-muted-foreground font-body leading-relaxed text-sm md:text-base">{children}</div>
-  </motion.div>
-);
+const anim = (delay: number) => ({
+  initial: { opacity: 0, y: 16 } as const,
+  animate: { opacity: 1, y: 0 } as const,
+  transition: { duration: 0.4, delay },
+});
+
+/** Extract the first sentence from a paragraph */
+const firstSentence = (text: string) => {
+  const match = text.match(/^(.+?[.!?])\s/);
+  return match ? match[1] : text.slice(0, 120) + "…";
+};
+
+/** Grab 2-3 short key phrases from a paragraph */
+const keyPhrases = (text: string, count = 3): string[] => {
+  const sentences = text.split(/(?<=[.!?])\s+/).filter(Boolean);
+  return sentences.slice(0, count).map((s) => s.replace(/\.$/, ""));
+};
 
 const ResultPage = ({ archetype, onRestart }: ResultPageProps) => {
+  const illustration = archetypeIllustrations[archetype.key];
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero */}
-      <div className="gradient-hero py-16 md:py-24 px-4">
-        <div className="max-w-2xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, type: "spring" }}
-          >
-            <span className="text-6xl md:text-7xl block mb-4">{archetype.emoji}</span>
-            <h1 className="text-3xl md:text-5xl font-display font-bold text-gradient mb-3">
+      {/* ── Hero ── */}
+      <div className="gradient-hero py-14 md:py-20 px-4">
+        <div className="max-w-md mx-auto text-center">
+          <motion.div {...anim(0)}>
+            <p className="text-sm font-body text-muted-foreground mb-2 tracking-wide uppercase">
+              You are…
+            </p>
+            <span className="text-5xl md:text-6xl block mb-3">{archetype.emoji}</span>
+            <h1 className="text-3xl md:text-5xl font-display font-bold text-gradient mb-2">
               {archetype.name}
             </h1>
-            {archetypeIllustrations[archetype.key] && (
-              <motion.img
-                src={archetypeIllustrations[archetype.key]}
-                alt={archetype.name}
-                className="w-40 h-40 md:w-52 md:h-52 rounded-2xl object-cover shadow-xl border-2 border-blush/30 mx-auto my-6"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-              />
-            )}
-            <p className="text-lg md:text-xl text-muted-foreground italic font-display">
-              "{archetype.tagline}"
-            </p>
           </motion.div>
+
+          {illustration && (
+            <motion.img
+              src={illustration}
+              alt={archetype.name}
+              className="w-40 h-40 md:w-48 md:h-48 rounded-2xl object-cover shadow-xl border-2 border-blush/30 mx-auto my-5"
+              {...anim(0.15)}
+            />
+          )}
+
+          <motion.p
+            className="text-base md:text-lg text-muted-foreground italic font-display"
+            {...anim(0.2)}
+          >
+            "{archetype.tagline}"
+          </motion.p>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="max-w-2xl mx-auto px-4 py-12">
-        <Section title="Your Lover Profile" delay={0.2}>
-          <p>{archetype.description}</p>
-        </Section>
+      {/* ── Cards ── */}
+      <div className="max-w-lg mx-auto px-4 py-10 space-y-6">
+        {/* Quick trait chips */}
+        <motion.div className="flex flex-wrap justify-center gap-2" {...anim(0.25)}>
+          {archetype.strengths.slice(0, 3).map((s) => (
+            <span
+              key={s}
+              className="px-4 py-2 rounded-full bg-secondary text-secondary-foreground text-sm font-body"
+            >
+              {s}
+            </span>
+          ))}
+        </motion.div>
 
-        <div className="flex justify-center my-8">
-          <motion.img
-            src={coupleBokeh}
-            alt="Romantic illustration"
-            className="w-48 h-48 md:w-56 md:h-56 rounded-2xl object-cover shadow-lg border-2 border-blush/30"
-            initial={{ opacity: 0, rotate: -3 }}
-            animate={{ opacity: 1, rotate: -2 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          />
+        {/* Profile card */}
+        <Card title="Your Lover Profile" delay={0.3}>
+          <p className="text-sm text-muted-foreground font-body leading-relaxed">
+            {firstSentence(archetype.description)}
+          </p>
+        </Card>
+
+        {/* Side-by-side: How You Love / How to Love You */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Card title="How You Love" delay={0.35}>
+            <ul className="space-y-1.5">
+              {keyPhrases(archetype.howTheyLove, 2).map((p, i) => (
+                <li key={i} className="text-sm text-muted-foreground font-body flex items-start gap-2">
+                  <span className="text-accent mt-0.5">♡</span>
+                  <span>{p}</span>
+                </li>
+              ))}
+            </ul>
+          </Card>
+          <Card title="How to Love You" delay={0.4}>
+            <ul className="space-y-1.5">
+              {keyPhrases(archetype.howToLoveThem, 2).map((p, i) => (
+                <li key={i} className="text-sm text-muted-foreground font-body flex items-start gap-2">
+                  <span className="text-accent mt-0.5">✦</span>
+                  <span>{p}</span>
+                </li>
+              ))}
+            </ul>
+          </Card>
         </div>
 
-        <Section title="How You Love" delay={0.3}>
-          <p>{archetype.howTheyLove}</p>
-        </Section>
+        {/* Strengths & Growth side-by-side */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Card title="Strengths" delay={0.45}>
+            <ul className="space-y-1">
+              {archetype.strengths.map((s) => (
+                <li key={s} className="text-sm text-muted-foreground font-body">
+                  ✓ {s}
+                </li>
+              ))}
+            </ul>
+          </Card>
+          <Card title="Growth Areas" delay={0.5}>
+            <ul className="space-y-1">
+              {archetype.growthAreas.map((g) => (
+                <li key={g} className="text-sm text-muted-foreground font-body">
+                  → {g}
+                </li>
+              ))}
+            </ul>
+          </Card>
+        </div>
 
-        <Section title="How to Love You" delay={0.35}>
-          <p>{archetype.howToLoveThem}</p>
-        </Section>
+        {/* Romantic dynamic */}
+        <Card title="Ideal Dynamic" delay={0.55}>
+          <p className="text-sm text-muted-foreground font-body leading-relaxed">
+            {firstSentence(archetype.idealDynamic)}
+          </p>
+        </Card>
 
-        <Section title="Your Emotional Strengths" delay={0.4}>
-          <div className="flex flex-wrap gap-2">
-            {archetype.strengths.map((s) => (
-              <span key={s} className="px-3 py-1.5 rounded-full bg-secondary text-secondary-foreground text-xs font-body">
-                {s}
-              </span>
-            ))}
-          </div>
-        </Section>
+        {/* Best environment */}
+        <Card title="Where to Find Love" delay={0.6}>
+          <p className="text-sm text-muted-foreground font-body leading-relaxed">
+            {firstSentence(archetype.bestEnvironment)}
+          </p>
+        </Card>
 
-        <Section title="Growth Areas" delay={0.45}>
-          <div className="flex flex-wrap gap-2">
-            {archetype.growthAreas.map((g) => (
-              <span key={g} className="px-3 py-1.5 rounded-full bg-card border border-border text-muted-foreground text-xs font-body">
-                {g}
-              </span>
-            ))}
-          </div>
-        </Section>
+        {/* Decorative image divider */}
+        <motion.div className="flex justify-center py-2" {...anim(0.65)}>
+          <img
+            src={coupleBokeh}
+            alt=""
+            className="w-32 h-32 rounded-2xl object-cover shadow-md border border-blush/20 -rotate-2"
+          />
+        </motion.div>
 
-        <Section title="Your Ideal Romantic Dynamic" delay={0.5}>
-          <p>{archetype.idealDynamic}</p>
-        </Section>
-
-        <Section title="Best Environment to Find Love" delay={0.55}>
-          <p>{archetype.bestEnvironment}</p>
-        </Section>
-
-        {/* Personalized Advice */}
-        <motion.div
-          className="mt-12 pt-8 border-t-2 border-border"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-        >
-          <div className="flex items-center gap-4 mb-8">
-            <motion.img
+        {/* ── Advice Section ── */}
+        <motion.div {...anim(0.7)}>
+          <div className="flex items-center gap-3 mb-5">
+            <img
               src={coupleWindow}
-              alt="Couple by window"
-              className="w-20 h-20 rounded-xl object-cover border border-blush/30"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.65 }}
+              alt=""
+              className="w-14 h-14 rounded-xl object-cover border border-blush/30"
             />
             <div>
-              <h2 className="text-2xl md:text-3xl font-display font-bold text-gradient">
-                Your Personalized Advice
+              <h2 className="text-xl md:text-2xl font-display font-bold text-gradient">
+                Personalized Advice
               </h2>
-              <p className="text-sm text-muted-foreground">Tailored guidance for your lover type</p>
+              <p className="text-xs text-muted-foreground">Tailored to your type</p>
             </div>
-          </div>
-
-          <div className="space-y-6">
-            <AdviceCard title="💬 Communication" text={archetype.advice.communication} delay={0.7} />
-            <AdviceCard title="💕 Compatible Partners" text={archetype.advice.compatiblePartner} delay={0.75} />
-            <AdviceCard title="⚠️ Pitfalls to Avoid" text={archetype.advice.pitfalls} delay={0.8} />
-            <AdviceCard title="🌱 How to Grow" text={archetype.advice.growth} delay={0.85} />
-            <AdviceCard title="📱 Dating Strategy" text={archetype.advice.datingStrategy} delay={0.9} />
-            <AdviceCard title="🌊 Handling Conflict" text={archetype.advice.conflictHandling} delay={0.95} />
           </div>
         </motion.div>
 
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <AdviceCard icon="💬" title="Communication" text={firstSentence(archetype.advice.communication)} delay={0.75} />
+          <AdviceCard icon="💕" title="Compatible Partners" text={firstSentence(archetype.advice.compatiblePartner)} delay={0.8} />
+          <AdviceCard icon="⚠️" title="Pitfalls" text={firstSentence(archetype.advice.pitfalls)} delay={0.85} />
+          <AdviceCard icon="🌱" title="Growth" text={firstSentence(archetype.advice.growth)} delay={0.9} />
+          <AdviceCard icon="📱" title="Dating Strategy" text={firstSentence(archetype.advice.datingStrategy)} delay={0.95} />
+          <AdviceCard icon="🌊" title="Conflict" text={firstSentence(archetype.advice.conflictHandling)} delay={1.0} />
+        </div>
+
         {/* Restart */}
-        <motion.div
-          className="text-center mt-16 mb-8"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.1 }}
-        >
+        <motion.div className="text-center pt-10 pb-6" {...anim(1.1)}>
           <button
             onClick={onRestart}
             className="px-8 py-3 rounded-full border-2 border-primary text-primary font-display hover:bg-primary/10 transition-colors"
@@ -159,15 +193,45 @@ const ResultPage = ({ archetype, onRestart }: ResultPageProps) => {
   );
 };
 
-const AdviceCard = ({ title, text, delay }: { title: string; text: string; delay: number }) => (
+/* ── Sub-components ── */
+
+const Card = ({
+  title,
+  children,
+  delay = 0,
+}: {
+  title: string;
+  children: React.ReactNode;
+  delay?: number;
+}) => (
   <motion.div
     className="p-5 rounded-xl bg-card border border-border"
-    initial={{ opacity: 0, y: 15 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.4, delay }}
+    {...anim(delay)}
   >
-    <h4 className="font-display font-semibold text-foreground mb-2">{title}</h4>
-    <p className="text-sm text-muted-foreground font-body leading-relaxed">{text}</p>
+    <h3 className="text-base font-display font-semibold text-foreground mb-2">{title}</h3>
+    {children}
+  </motion.div>
+);
+
+const AdviceCard = ({
+  icon,
+  title,
+  text,
+  delay,
+}: {
+  icon: string;
+  title: string;
+  text: string;
+  delay: number;
+}) => (
+  <motion.div
+    className="p-4 rounded-xl bg-card border border-border"
+    {...anim(delay)}
+  >
+    <h4 className="font-display font-semibold text-foreground mb-1.5 text-sm">
+      {icon} {title}
+    </h4>
+    <p className="text-xs text-muted-foreground font-body leading-relaxed">{text}</p>
   </motion.div>
 );
 
