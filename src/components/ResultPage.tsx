@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { type Archetype, archetypes } from "@/data/archetypes";
 import { archetypeIllustrations } from "@/data/archetypeIllustrations";
 import { compatibility, compatLevelLabel, compatLevelColor, type CompatLevel } from "@/data/compatibility";
@@ -65,16 +65,17 @@ const keyPhrases = (text: string, count = 3): string[] => {
 const ResultPage = ({ archetype, onRestart }: ResultPageProps) => {
   const illustration = archetypeIllustrations[archetype.key];
   const [selectedPartner, setSelectedPartner] = useState<Archetype | null>(null);
+  const resultsContainerRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" ref={resultsContainerRef}>
       {/* ── Hero ── */}
       <div className="gradient-hero py-8 md:py-12 px-4">
-        <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-4">
+        <div className="max-w-4xl mx-auto flex flex-row items-center gap-4">
           {/* Image left */}
           {illustration && (
             <motion.div {...anim(0)} className="flex-shrink-0">
-              <div className="w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 lg:w-44 lg:h-44 rounded-2xl md:rounded-3xl overflow-hidden bg-white/40 dark:bg-black/30 shadow-xl border border-border flex items-center justify-center">
+              <div className="w-32 h-40 sm:w-40 sm:h-48 md:w-52 md:h-64 lg:w-64 lg:h-80 rounded-2xl md:rounded-3xl overflow-hidden bg-white/40 dark:bg-black/30 shadow-xl border border-border flex items-center justify-center">
                 <img
                   src={illustration}
                   alt={archetype.name}
@@ -85,7 +86,7 @@ const ResultPage = ({ archetype, onRestart }: ResultPageProps) => {
           )}
 
           {/* Text right */}
-          <motion.div {...anim(0.05)} className="text-center md:text-left mx-auto md:mx-0">
+          <motion.div {...anim(0.05)} className="text-center mx-auto md:mx-0">
             <p className="text-sm font-body text-muted-foreground mb-2 tracking-wide uppercase">
               You are…
             </p>
@@ -234,7 +235,7 @@ const ResultPage = ({ archetype, onRestart }: ResultPageProps) => {
         )}
 
         {/* Share Results */}
-        <ShareResults archetype={archetype} />
+        <ShareResults archetype={archetype} resultsRef={resultsContainerRef} />
 
         {/* Restart */}
         <motion.div className="text-center pt-10 pb-6" {...anim(1.2)}>

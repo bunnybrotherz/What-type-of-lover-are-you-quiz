@@ -104,7 +104,7 @@ const QuizStep = ({
         <button
           onClick={onPrev}
           disabled={currentIndex === 0}
-          className="px-6 py-3 rounded-full border-2 border-border text-muted-foreground font-body text-sm hover:bg-secondary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          className="px-6 py-3 rounded-full border-2 border-border text-muted-foreground font-display text-sm hover:bg-secondary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
         >
           Back
         </button>

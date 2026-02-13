@@ -1,25 +1,27 @@
 import { motion } from "framer-motion";
-import { useRef } from "react";
+import { type RefObject } from "react";
 import html2canvas from "html2canvas";
 import { type Archetype } from "@/data/archetypes";
 import { archetypeIllustrations } from "@/data/archetypeIllustrations";
 
 interface ShareResultsProps {
   archetype: Archetype;
+  resultsRef?: RefObject<HTMLDivElement>;
   delay?: number;
 }
 
-const ShareResults = ({ archetype, delay = 1.3 }: ShareResultsProps) => {
-  const summaryRef = useRef<HTMLDivElement>(null);
-
+const ShareResults = ({ archetype, resultsRef, delay = 1.3 }: ShareResultsProps) => {
   const downloadAsImage = async () => {
-    if (!summaryRef.current) return;
+    // Download the entire results page
+    if (!resultsRef?.current) return;
 
     try {
-      const canvas = await html2canvas(summaryRef.current, {
+      const canvas = await html2canvas(resultsRef.current, {
         backgroundColor: "#faf8f6",
         scale: 2,
         logging: false,
+        width: resultsRef.current.offsetWidth,
+        height: resultsRef.current.offsetHeight,
       });
 
       const link = document.createElement("a");
@@ -33,10 +35,11 @@ const ShareResults = ({ archetype, delay = 1.3 }: ShareResultsProps) => {
 
   const copyShareLink = () => {
     const baseUrl = window.location.origin;
-    // You can use URL parameters to pass the archetype key
+    // Generate shareable URL with the archetype key
     const shareUrl = `${baseUrl}?result=${archetype.key}`;
     navigator.clipboard.writeText(shareUrl);
-    alert("Share link copied to clipboard!");
+    // Open the results page in a new tab
+    window.open(shareUrl, '_blank');
   };
 
   return (
@@ -46,43 +49,6 @@ const ShareResults = ({ archetype, delay = 1.3 }: ShareResultsProps) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay }}
     >
-      {/* Summary Card for Download */}
-      <div
-        ref={summaryRef}
-        className="bg-gradient-to-br from-accent/10 via-blush/5 to-lavender/10 rounded-2xl p-8 mb-6 border border-border/50"
-      >
-        <div className="flex items-center gap-6 mb-6">
-          <div className="w-24 h-24 rounded-2xl overflow-hidden bg-white/60 border-2 border-border flex-shrink-0">
-            <img
-              src={archetypeIllustrations[archetype.key]}
-              alt={archetype.name}
-              className="w-full h-full object-cover object-center"
-            />
-          </div>
-          <div>
-            <p className="text-sm font-body text-muted-foreground tracking-wide uppercase mb-1">
-              Your love type
-            </p>
-            <h2 className="text-3xl font-display font-bold text-gradient">
-              {archetype.name}
-            </h2>
-            <p className="text-sm italic text-muted-foreground mt-2">
-              {archetype.tagline}
-            </p>
-          </div>
-        </div>
-        <div className="space-y-3 text-sm text-muted-foreground font-body leading-relaxed">
-          <div>
-            <p className="font-semibold text-foreground mb-1">Profile</p>
-            <p>{archetype.description.split(".")[0]}.</p>
-          </div>
-          <div>
-            <p className="font-semibold text-foreground mb-1">How You Love</p>
-            <p>{archetype.howTheyLove.split(".")[0]}.</p>
-          </div>
-        </div>
-      </div>
-
       {/* Share Buttons */}
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <motion.button
