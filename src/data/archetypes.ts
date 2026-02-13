@@ -2,6 +2,7 @@ export interface Archetype {
   key: string;
   name: string;
   emoji: string;
+  illustration?: string;
   tagline: string;
   description: string;
   howTheyLove: string;
@@ -23,8 +24,8 @@ export interface Archetype {
 export const archetypes: Record<string, Archetype> = {
   DC: {
     key: "DC",
-    name: "The Devoted Communicator",
-    emoji: "💬",
+    name: "The Love Letter",
+    emoji: "💌",
     tagline: "Love is a conversation that never ends.",
     description: "You believe the heart of every great love story is honest, fearless communication. You're the person who sends the long text at 2 AM — not because you're anxious, but because you refuse to let things go unsaid. For you, intimacy is built word by word, vulnerable admission by vulnerable admission.",
     howTheyLove: "Through deep conversations, verbal affirmations, and emotional transparency. You create safety through words and are fiercely committed to understanding your partner's inner world. You'll stay up all night to resolve a misunderstanding because peace matters more than sleep.",
@@ -44,8 +45,8 @@ export const archetypes: Record<string, Archetype> = {
   },
   AR: {
     key: "AR",
-    name: "The Adventurous Romantic",
-    emoji: "🌍",
+    name: "The Shooting Star",
+    emoji: "🌠",
     tagline: "Love should feel like the best trip you've ever taken.",
     description: "You fall in love with experiences as much as people. Your ideal relationship is a passport filled with stamps, a camera roll of spontaneous moments, and a partner who says 'yes' before you even finish the question. Routine is your nemesis; novelty is your love language.",
     howTheyLove: "Through shared experiences, spontaneity, and creating unforgettable memories. You show love by planning surprises, initiating adventures, and keeping the relationship feeling fresh and alive.",
@@ -65,7 +66,7 @@ export const archetypes: Record<string, Archetype> = {
   },
   TG: {
     key: "TG",
-    name: "The Thoughtful Giver",
+    name: "The Wrapped Gift",
     emoji: "🎁",
     tagline: "Love is in the details no one else notices.",
     description: "You express love through carefully considered acts of service and perfectly chosen gestures. You're the partner who remembers that throwaway comment about a childhood snack and surprises them with it six months later. Your love is quiet, deliberate, and devastatingly thoughtful.",
@@ -86,8 +87,8 @@ export const archetypes: Record<string, Archetype> = {
   },
   QS: {
     key: "QS",
-    name: "The Quiet Stabilizer",
-    emoji: "🏡",
+    name: "The Lighthouse",
+    emoji: "🕯️",
     tagline: "Love isn't a firework — it's a hearth.",
     description: "You are the calm in every storm, the steady hand in every crisis. You don't need grand gestures or dramatic declarations; you show love through unwavering presence. Your relationships are built on trust, consistency, and the quiet confidence that you'll always show up.",
     howTheyLove: "Through reliability, creating routines of care, and being the emotional anchor in the relationship. You handle life's logistics so your partner can dream, and your love is expressed in a thousand small, consistent acts.",
@@ -107,7 +108,7 @@ export const archetypes: Record<string, Archetype> = {
   },
   PP: {
     key: "PP",
-    name: "The Passionate Pursuer",
+    name: "The Flame",
     emoji: "🔥",
     tagline: "Love should take your breath away — or what's the point?",
     description: "You love with intensity. When you're in, you're all in — the grand gestures, the deep eye contact, the 'I need to see you right now' texts. You believe love should be felt viscerally, and you have zero patience for lukewarm affection.",
@@ -128,8 +129,8 @@ export const archetypes: Record<string, Archetype> = {
   },
   IE: {
     key: "IE",
-    name: "The Intuitive Empath",
-    emoji: "🌙",
+    name: "The Rose",
+    emoji: "🌹",
     tagline: "I feel what you can't say.",
     description: "You sense emotional shifts like weather changes. Before your partner even knows they're upset, you're already adjusting, soothing, accommodating. Your emotional intelligence is your superpower — and sometimes your burden. You love deeply because you feel deeply.",
     howTheyLove: "Through emotional attunement, deep presence, and anticipating their partner's inner world. They create an almost psychic bond where their partner feels fundamentally understood.",
@@ -149,8 +150,8 @@ export const archetypes: Record<string, Archetype> = {
   },
   II: {
     key: "II",
-    name: "The Independent Idealist",
-    emoji: "✨",
+    name: "The Compass",
+    emoji: "🧭",
     tagline: "I'd rather be alone than in the wrong love story.",
     description: "You have a crystal-clear vision of what love should be, and you refuse to settle for less. Your independence isn't fear of intimacy — it's a deep respect for it. You know yourself well enough to know exactly what kind of partnership would truly enrich your life.",
     howTheyLove: "By choosing their partner deliberately and fully. When they commit, it's because they've weighed every option and decided you're worth rearranging their carefully curated life for. That's the highest compliment they can give.",
@@ -170,8 +171,8 @@ export const archetypes: Record<string, Archetype> = {
   },
   SN: {
     key: "SN",
-    name: "The Steady Nurturer",
-    emoji: "🌿",
+    name: "The Warm Blanket",
+    emoji: "🧣",
     tagline: "I'll build you a home inside my heart.",
     description: "You are the embodiment of gentle, steadfast love. Your care is warm, consistent, and deeply nourishing. You create environments where people bloom — your home, your friendships, your relationships all bear the mark of someone who tends to life with patience and devotion.",
     howTheyLove: "Through consistent care, physical comfort, and creating a beautiful shared life. They nurture through cooking, creating cozy spaces, remembering appointments, and being the emotional bedrock of the relationship.",
@@ -191,8 +192,8 @@ export const archetypes: Record<string, Archetype> = {
   },
   PS: {
     key: "PS",
-    name: "The Playful Spark",
-    emoji: "⚡",
+    name: "The Firework",
+    emoji: "🎆",
     tagline: "Life's too short for boring love.",
     description: "You bring levity, joy, and electric energy to every relationship you touch. You believe that laughter is the foundation of love, and you're right — you create bonds through shared humor, playful banter, and an irresistible lightness that makes your partner feel alive.",
     howTheyLove: "Through humor, playfulness, spontaneous affection, and keeping the energy alive. They're the partner who leaves funny notes, initiates dance parties in the kitchen, and turns mundane moments into memories.",
@@ -212,8 +213,8 @@ export const archetypes: Record<string, Archetype> = {
   },
   AP: {
     key: "AP",
-    name: "The Analytical Protector",
-    emoji: "🛡️",
+    name: "The Lock & Key",
+    emoji: "🔐",
     tagline: "I love with my mind first, then my heart follows.",
     description: "You approach love like a carefully considered decision — not because you're cold, but because you care too much to be careless. You protect yourself and your partner through foresight, planning, and a deep commitment to building something that lasts.",
     howTheyLove: "Through thoughtful planning, problem-solving, and creating security. They research date ideas, remember important details, and show love by preparing for every scenario that might threaten the relationship.",

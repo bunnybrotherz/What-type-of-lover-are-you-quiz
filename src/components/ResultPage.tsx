@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { type Archetype } from "@/data/archetypes";
+import { archetypeIllustrations } from "@/data/archetypeIllustrations";
 import coupleBokeh from "@/assets/couple-bokeh.png";
 import coupleWindow from "@/assets/couple-window.png";
 
@@ -35,6 +36,16 @@ const ResultPage = ({ archetype, onRestart }: ResultPageProps) => {
             <h1 className="text-3xl md:text-5xl font-display font-bold text-gradient mb-3">
               {archetype.name}
             </h1>
+            {archetypeIllustrations[archetype.key] && (
+              <motion.img
+                src={archetypeIllustrations[archetype.key]}
+                alt={archetype.name}
+                className="w-40 h-40 md:w-52 md:h-52 rounded-2xl object-cover shadow-xl border-2 border-blush/30 mx-auto my-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              />
+            )}
             <p className="text-lg md:text-xl text-muted-foreground italic font-display">
               "{archetype.tagline}"
             </p>
