@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { type QuizQuestion } from "@/data/quizQuestions";
-import { categoryEmojis } from "@/data/quizQuestions";
+
 
 interface QuizStepProps {
   question: QuizQuestion;
@@ -23,7 +23,7 @@ const QuizStep = ({
   onNext,
   onPrev,
 }: QuizStepProps) => {
-  const emoji = categoryEmojis[question.category] || "💕";
+  
   const isLast = currentIndex === totalQuestions - 1;
 
   return (
@@ -32,7 +32,7 @@ const QuizStep = ({
       <div className="w-full max-w-xl mb-8">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm text-muted-foreground font-body">
-            {emoji} {question.categoryLabel}
+            {question.categoryLabel}
           </span>
           <span className="text-sm text-muted-foreground font-body">
             {currentIndex + 1}/{totalQuestions}
@@ -106,7 +106,7 @@ const QuizStep = ({
           disabled={currentIndex === 0}
           className="px-6 py-3 rounded-full border-2 border-border text-muted-foreground font-body text-sm hover:bg-secondary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
         >
-          ← Back
+          Back
         </button>
         <div className="flex-1" />
         <motion.button
@@ -116,7 +116,7 @@ const QuizStep = ({
           whileHover={selectedAnswer !== undefined ? { scale: 1.03 } : {}}
           whileTap={selectedAnswer !== undefined ? { scale: 0.97 } : {}}
         >
-          {isLast ? "See My Result ✦" : "Next →"}
+          {isLast ? "See My Result" : "Next"}
         </motion.button>
       </div>
     </div>
