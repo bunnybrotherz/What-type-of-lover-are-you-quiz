@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
-import { type Archetype } from "@/data/archetypes";
+import { type Archetype, archetypes } from "@/data/archetypes";
 import { archetypeIllustrations } from "@/data/archetypeIllustrations";
+import { compatibility, compatLevelLabel, compatLevelColor, type CompatLevel } from "@/data/compatibility";
 import coupleBokeh from "@/assets/couple-bokeh.png";
 import coupleWindow from "@/assets/couple-window.png";
 
@@ -179,8 +180,62 @@ const ResultPage = ({ archetype, onRestart }: ResultPageProps) => {
           <AdviceCard icon="🌊" title="Conflict" text={firstSentence(archetype.advice.conflictHandling)} delay={1.0} />
         </div>
 
+        {/* ── Compatibility Section ── */}
+        <motion.div className="mt-10 pt-8 border-t-2 border-border" {...anim(1.05)}>
+          <h2 className="text-xl md:text-2xl font-display font-bold text-gradient mb-1">
+            Compatibility
+          </h2>
+          <p className="text-xs text-muted-foreground mb-6">How you pair with every archetype</p>
+
+          {/* Best matches first */}
+          {(["great", "good", "neutral", "challenging"] as CompatLevel[]).map((level) => {
+            const matches = (compatibility[archetype.key] || []).filter((c) => c.level === level);
+            if (matches.length === 0) return null;
+            return (
+              <div key={level} className="mb-5">
+                <h4 className="text-xs font-body font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                  {level === "great" && "💕"} {level === "good" && "✨"} {level === "neutral" && "〰️"} {level === "challenging" && "⚡"}{" "}
+                  {compatLevelLabel[level]}
+                </h4>
+                <div className="space-y-2">
+                  {matches.map((match) => {
+                    const partner = archetypes[match.key];
+                    if (!partner) return null;
+                    const partnerImg = archetypeIllustrations[match.key];
+                    return (
+                      <motion.div
+                        key={match.key}
+                        className={`flex items-center gap-3 p-3 rounded-xl border ${compatLevelColor[match.level]}`}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        {partnerImg && (
+                          <img
+                            src={partnerImg}
+                            alt={partner.name}
+                            className="w-10 h-10 rounded-lg object-cover border border-border flex-shrink-0"
+                          />
+                        )}
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-display font-semibold truncate">
+                            {partner.emoji} {partner.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground font-body leading-snug">
+                            {match.reason}
+                          </p>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </motion.div>
+
         {/* Restart */}
-        <motion.div className="text-center pt-10 pb-6" {...anim(1.1)}>
+        <motion.div className="text-center pt-10 pb-6" {...anim(1.2)}>
           <button
             onClick={onRestart}
             className="px-8 py-3 rounded-full border-2 border-primary text-primary font-display hover:bg-primary/10 transition-colors"
