@@ -2,11 +2,26 @@ import { useState, useCallback } from "react";
 import { quizQuestions } from "@/data/quizQuestions";
 import { archetypes, type Archetype } from "@/data/archetypes";
 
+const getSharedResult = (): Archetype | null => {
+  if (typeof window === "undefined") return null;
+
+  const queryResultKey = new URLSearchParams(window.location.search).get("result");
+  const hashQuery = window.location.hash.includes("?")
+    ? window.location.hash.slice(window.location.hash.indexOf("?"))
+    : "";
+  const hashResultKey = hashQuery ? new URLSearchParams(hashQuery).get("result") : null;
+  const resultKey = (queryResultKey ?? hashResultKey ?? "").trim().toUpperCase();
+  if (!resultKey) return null;
+
+  const archetype = archetypes[resultKey];
+  return archetype ?? null;
+};
+
 export function useQuiz() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, number>>({});
-  const [result, setResult] = useState<Archetype | null>(null);
-  const [started, setStarted] = useState(false);
+  const [result, setResult] = useState<Archetype | null>(() => getSharedResult());
+  const [started, setStarted] = useState(() => getSharedResult() !== null);
 
   const totalQuestions = quizQuestions.length;
   const currentQuestion = quizQuestions[currentIndex] ?? null;
@@ -44,7 +59,10 @@ export function useQuiz() {
           maxKey = key;
         }
       }
-      setResult(archetypes[maxKey]);
+      const nextResult = archetypes[maxKey];
+      setResult(nextResult);
+      const nextUrl = `${window.location.origin}${window.location.pathname}?result=${nextResult.key}`;
+      window.history.replaceState({}, "", nextUrl);
     }
   }, [currentIndex, totalQuestions, answers, currentQuestion]);
 
@@ -57,6 +75,8 @@ export function useQuiz() {
     setAnswers({});
     setResult(null);
     setStarted(false);
+    const resetUrl = `${window.location.origin}${window.location.pathname}`;
+    window.history.replaceState({}, "", resetUrl);
   }, []);
 
   return {
