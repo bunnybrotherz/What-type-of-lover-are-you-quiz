@@ -26,9 +26,20 @@ const ShareResults = ({ archetype, resultsRef, delay = 1.3 }: ShareResultsProps)
       target.setAttribute("data-export-root", "true");
       const captureWidth = Math.max(target.scrollWidth, target.offsetWidth);
       const captureHeight = Math.max(target.scrollHeight, target.offsetHeight);
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      const isIOS =
+        /iPad|iPhone|iPod/i.test(navigator.userAgent) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      const baseScale = Math.max(2, Math.min(3, window.devicePixelRatio || 2));
+      const maxPixels = isMobile ? 8_000_000 : 16_000_000;
+      const estimatedPixels = captureWidth * captureHeight * baseScale * baseScale;
+      const safeScale =
+        estimatedPixels > maxPixels
+          ? Math.max(1, Math.sqrt(maxPixels / (captureWidth * captureHeight)))
+          : baseScale;
       const canvas = await html2canvas(target, {
         backgroundColor: "#faf8f6",
-        scale: Math.max(2, Math.min(3, window.devicePixelRatio || 2)),
+        scale: safeScale,
         logging: false,
         useCORS: true,
         width: captureWidth,
@@ -60,10 +71,35 @@ const ShareResults = ({ archetype, resultsRef, delay = 1.3 }: ShareResultsProps)
         },
       });
 
+      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
+      if (!blob) throw new Error("PNG generation failed.");
+
+      const fileName = `my-love-type-${archetype.key}.png`;
+      if (navigator.share && navigator.canShare) {
+        const file = new File([blob], fileName, { type: "image/png" });
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: "My lover archetype result",
+          });
+          return;
+        }
+      }
+
+      const blobUrl = URL.createObjectURL(blob);
+      if (isIOS) {
+        window.open(blobUrl, "_blank", "noopener,noreferrer");
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
+        return;
+      }
+
       const link = document.createElement("a");
-      link.download = `my-love-type-${archetype.key}.png`;
-      link.href = canvas.toDataURL("image/png");
+      link.download = fileName;
+      link.href = blobUrl;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
     } catch (error) {
       console.error("Failed to download image:", error);
     } finally {
